@@ -1,27 +1,47 @@
-const restoraunt = JSON.parse(localStorage.getItem('restaurant'))
+const menu = () => {
+    const restoraunt = JSON.parse(localStorage.getItem('restaurant'))
 
-const cardsMenu = document.querySelector('.cards-menu')
+    const cartArr = localStorage.getItem('cart') ? 
+    JSON.parse(localStorage.getItem('cart')) : []
 
-const changeTitle = (restaurant) => {
-    const restaurantTitle = document.querySelector('.restaurant-title'),
-    rating = document.querySelector('.rating'),
-    price = document.querySelector('.price'),
-    category = document.querySelector('.category')
+    const cardsMenu = document.querySelector('.cards-menu')
 
-    console.log(restaurant);
+    const changeTitle = (restaurant) => {
+        const restaurantTitle = document.querySelector('.restaurant-title'),
+            rating = document.querySelector('.rating'),
+            price = document.querySelector('.price'),
+            category = document.querySelector('.category')
 
-    restaurantTitle.textContent = restaurant.name
-    rating.textContent = restaurant.stars
-    price.textContent = restaurant.price
-    category.textContent = restaurant.kitchen
-}
+        console.log(restaurant);
 
-const renderItems = (data) => {
-    data.forEach(({ description, id, image, name, price }) => {
-        const card = document.createElement('div')
-        card.classList.add('card')
+        restaurantTitle.textContent = restaurant.name
+        rating.textContent = restaurant.stars
+        price.textContent = restaurant.price
+        category.textContent = restaurant.kitchen
+    }
 
-        card.innerHTML = `
+    const addToCart = (obj) => {
+        if(cartArr.some(item => item.id === obj.id)) {
+            cartArr.map(item => {
+                if(item.id === obj.id) {
+                    item.count++
+                }
+                return item
+            })
+        }else {
+            cartArr.push(obj)
+        }
+        
+
+        localStorage.setItem('cart', JSON.stringify(cartArr))
+    }
+
+    const renderItems = (data) => {
+        data.forEach(({ description, id, image, name, price }) => {
+            const card = document.createElement('div')
+            card.classList.add('card')
+
+            card.innerHTML = `
         <img src="${image}" alt="${name}" class="card-image" />
         <div class="card-text">
             <div class="card-heading">
@@ -44,16 +64,22 @@ const renderItems = (data) => {
         </div>
         `
 
-        cardsMenu.append(card)
-    });
+            card.querySelector('.button-card-text').addEventListener('click', () => {
+                addToCart({name,price,id,count:1})
+            })
+
+            cardsMenu.append(card)
+        });
+    }
+
+    if (localStorage.getItem('restaurant')) {
+        changeTitle(restoraunt)
+        fetch(`./db/${restoraunt.products}`)
+            .then((res) => res.json())
+            .then((data) => renderItems(data))
+    } else {
+        window.location.href = '/'
+    }
 }
 
-if(localStorage.getItem('restaurant')) {
-    changeTitle(restoraunt)
-    fetch(`./db/${restoraunt.products}`)
-    .then((res) => res.json())
-    .then((data) => renderItems(data))
-}else {
-    window.location.href = '/'
-}
-
+menu()

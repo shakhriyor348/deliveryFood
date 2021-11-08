@@ -1,11 +1,13 @@
-const buttonAuth = document.querySelector('.button-auth'),
+const auth = () => {
+    const buttonAuth = document.querySelector('.button-auth'),
     modalAuth = document.querySelector('.modal-auth'),
     closeAuth = document.querySelector('.close-auth'),
     logInForm = document.querySelector('#logInForm'),
     userLogin = document.querySelector('#login'),
     userPassword = document.querySelector('#password'),
     btnOut = document.querySelector('.button-out'),
-    userName = document.querySelector('.user-name')
+    userName = document.querySelector('.user-name'),
+    buttonCart = document.querySelector('.button-cart') 
 
 
 // Модалка войти
@@ -29,6 +31,7 @@ const login = (user) => { /* Авторизация */
     userName.style.display = 'flex'
     userName.textContent = user.login
     modalAuth.style = `display: none;`
+    buttonCart.style = `display: flex;`
 }
 
 
@@ -38,6 +41,7 @@ const logOut = () => {
     userName.style.display = 'none'
     userName.textContent = ''
     localStorage.removeItem('user')
+    buttonCart.style = `display: none;`
 }
 
 btnOut.addEventListener('click', () => {
@@ -59,3 +63,6 @@ logInForm.addEventListener('submit', (e) => {
 if(localStorage.getItem('user')) {
     login(JSON.parse(localStorage.getItem('user')))
 }
+}
+
+auth()
